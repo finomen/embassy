@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+use defmt::println;
 use crate::pac::crs::vals::Syncsrc;
 use crate::pac::{CRS, RCC};
 use crate::rcc::{self, SealedRccPeripheral};
@@ -40,8 +41,10 @@ pub(crate) fn init_hsi48(config: Hsi48Config) -> Hertz {
     #[cfg(any(stm32f0))]
     let r = RCC.cr2();
 
+    println!("Set HSI48 ON");
     r.modify(|w| w.set_hsi48on(true));
     while r.read().hsi48rdy() == false {}
+    println!("HSI48 ON={} RDY={}",r.read().hsi48on(), r.read().hsi48rdy());
 
     if config.sync_from_usb {
         rcc::enable_and_reset::<crate::peripherals::CRS>();

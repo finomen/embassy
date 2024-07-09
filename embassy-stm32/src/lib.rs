@@ -77,6 +77,9 @@ pub mod flash;
 pub mod fmc;
 #[cfg(hash)]
 pub mod hash;
+
+#[cfg(cec)]
+pub mod cec;
 #[cfg(hrtim)]
 pub mod hrtim;
 #[cfg(hsem)]
@@ -276,6 +279,7 @@ impl Default for Config {
 pub fn init(config: Config) -> Peripherals {
     critical_section::with(|cs| {
         let p = Peripherals::take_with_cs(cs);
+
 
         #[cfg(dbgmcu)]
         crate::pac::DBGMCU.cr().modify(|cr| {

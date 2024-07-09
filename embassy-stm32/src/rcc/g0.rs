@@ -1,3 +1,4 @@
+use defmt::println;
 use crate::pac::flash::vals::Latency;
 pub use crate::pac::pwr::vals::Vos as VoltageRange;
 pub use crate::pac::rcc::vals::{
@@ -227,6 +228,8 @@ pub(crate) unsafe fn init(config: Config) {
         _ => unreachable!(),
     };
 
+    println!("1HSI48 ON={} RDY={}",RCC.cr().read().hsi48on(), RCC.cr().read().hsi48rdy());
+
     assert!(max::SYSCLK.contains(&sys));
 
     // Calculate the AHB frequency (HCLK), among other things so we can calculate the correct flash read latency.
@@ -245,6 +248,8 @@ pub(crate) unsafe fn init(config: Config) {
         (VoltageRange::RANGE2, _) => Latency::WS2,
         _ => unreachable!(),
     };
+
+    println!("2HSI48 ON={} RDY={}",RCC.cr().read().hsi48on(), RCC.cr().read().hsi48rdy());
 
     // Configure flash read access latency based on voltage scale and frequency (RM0444 3.3.4)
     FLASH.acr().modify(|w| {
@@ -271,6 +276,8 @@ pub(crate) unsafe fn init(config: Config) {
         assert!(sys <= Hertz(2_000_000));
         PWR.cr1().modify(|w| w.set_lpr(true));
     }
+
+    println!("3HSI48 ON={} RDY={}",RCC.cr().read().hsi48on(), RCC.cr().read().hsi48rdy());
 
     let rtc = config.ls.init();
 
